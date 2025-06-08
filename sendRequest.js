@@ -1,51 +1,45 @@
-import { getSessId, PHPSESSID, URL } from "./init.js";
+import { PHPSESSID } from "./init.js";
 
 // Gửi POST request
 
-export default async function send(lophocphan = "") {
-  const sessId = getSessId();
-//   console.log(lophocphan, sessId);
+export default async function send(
+  url,
+  lophocphan = "",
+  names = new Set(),
+  sessId = ""
+) {
+  //   console.log(lophocphan, sessId);
   const formData = new URLSearchParams();
   formData.append("lophocphan", lophocphan);
 
   // Gửi điểm cho từng tiêu chí (sử dụng giá trị từ payload bạn đã bắt được)
-  formData.append("4882", "3");
-  formData.append("4883", "3");
-  formData.append("4884", "3");
-  formData.append("4885", "3");
-  formData.append("4886", "3");
-  formData.append("4887", "3");
-  formData.append("4888", "3");
-  formData.append("4889", "3");
-  formData.append("4890", "3");
-  formData.append("4891", "3");
-  formData.append("4892", "3");
-  formData.append("4893", "3");
-  formData.append("4894", "3");
-  formData.append("4895", "3");
-  formData.append("4896", "3");
-  formData.append("4897", "3");
-  formData.append("4898", "3");
-  formData.append("4899", "3");
-  formData.append("4900", "3");
-  formData.append("4901", "3");
-  formData.append("4902", "4");
-  formData.append("btnupdate", "Hoàn thành");
+  let i = 0;
+  const lastIndex = names.size - 1;
 
-  fetch(URL, {
+  for (const name of names) {
+    const value = i === lastIndex ? "4" : "3";
+    console.log(name);
+    formData.append(name, value);
+    i++;
+  }
+  formData.append("btnupdate", "Hoàn thành");
+  console.log(sessId);
+  // console.log(formData);
+
+  fetch(url, {
     method: "POST",
     headers: {
       "Content-Type": "application/x-www-form-urlencoded",
-      "Cookie": PHPSESSID + "=" + sessId,
+      Cookie: PHPSESSID + "=" + sessId,
       // Cookie không cần thêm nếu đang chạy trong trình duyệt đã đăng nhập
     },
     body: formData.toString(),
   })
     .then((response) => response.text())
     .then((result) => {
-      console.log("Đánh giá thành công:");
+      console.log("Đánh giá thành công:", lophocphan);
     })
     .catch((error) => {
-      console.error("Lỗi khi gửi đánh giá:");
+      console.error("Lỗi khi gửi đánh giá:", lophocphan);
     });
 }
